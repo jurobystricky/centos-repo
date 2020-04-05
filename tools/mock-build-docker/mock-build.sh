@@ -58,17 +58,18 @@ download_file() {
 # Download and install upstream RPM into ~/rpmbuild folder
 #
 download_install_upstream_src() {
-    # the first line is upstream url
-    upstream_url=$(sed '1q;d' $package_path/upstream)
-    # the second line is md5sum
-    md5sum_val=$(sed '2q;d' $package_path/upstream)
+    # the first line is source file name
+    src_file_name=$(sed '1q;d' $package_path/upstream)
+    # the second line is upstream url
+    upstream_url=$(sed '2q;d' $package_path/upstream)
+    # the third line is md5sum
+    md5sum_val=$(sed '3q;d' $package_path/upstream)
 
     echo "Upstream URL: $upstream_url"
-    src_file_name=$(basename $upstream_url)
     echo "SRC file name: $src_file_name"
     
     download_file $build_path/$src_file_name $upstream_url $md5sum_val
-    mkdir -p $build_path/rpmbuild/{BUILD,RPMS,S{OURCE,PEC,RPM}S
+    mkdir -p $build_path/rpmbuild/SOURCES
     echo "%_topdir $build_path/rpmbuild" > ~/.rpmmacros
     extension="${src_file_name##*.}"
     
@@ -77,13 +78,13 @@ download_install_upstream_src() {
             rpm -i $build_path/$src_file_name
             ;;
         *)
-            echo "Unknow file type: $extension"
+            cp $build_path/$src_file_name $build_path/rpmbuild/SOURCES
             ;;
     esac
 }
 
 copy_patches_to_src() {
-    cp $package_path/*.patch $build_path/rpmbuild/SOURCES
+    cp $package_path/*.patch $build_path/rpmbuild/SOURCES 2>/dev/null
 }
 
 #
