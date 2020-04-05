@@ -96,7 +96,7 @@ cmd_build_package() {
     do
         sleep 5
         mock_pid=$(pgrep mock-build.sh)
-        if [ -z $mock_pid ]; then
+        if [[ -z "$mock_pid" ]]; then
             break
         fi
     done
