@@ -28,6 +28,12 @@ cd tools/mock-build-docker
 ./build-container.sh
 ```
 
+_NOTE: On ubuntu, apparmor will break "mount action" in mock container. So please uninstall apparmor before run mock container._
+```
+sudo systemctl stop apparmor
+sudo systemctl disable apparmor
+sudo apt-get purge apparmor
+```
 #### Build a package
 ```
 ./pkg.sh build -p <package_name> [ -r <repo_dir>]
@@ -41,7 +47,7 @@ For example:
 ```
 
 After build,
-- Original upstream rpm at ./build/<package_name>
-- Optimized srpm and rpms at ./build/<package_name>/result/
+- Original upstream rpm at `./build/<package_name>`
+- Optimized srpm and rpms at `./build/<package_name>/result/`
 
-_NOTE: mock's cache and ccache are under ./cache folder, please configure temporary storage when building on kubernetes CI/CD_
+_NOTE: mock's cache and ccache are under `./cache` folder, please configure temporary storage when building on kubernetes CI/CD_
