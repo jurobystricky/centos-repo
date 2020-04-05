@@ -28,7 +28,18 @@ cd tools/mock-build-docker
 
 #### Build a package
 ```
-./pkg build -p <package_name> [ -r <repo_dir>]
+./pkg.sh build -p <package_name> [ -r <repo_dir>]
 ```
 * `-p <package_name>` Specify the package name for build, please use `./pkg.sh list` to find the package for build
 * `-r <repo_dir>` is optional, by default the repository directory is the "repo" folder under this projects
+
+For example:
+```
+./pkg.sh build -p glibc-intel-avx
+```
+
+After build,
+- Original upstream rpm at ./build/<package_name>
+- Optimized srpm and rpms at ./build/<package_name>/result/
+
+_NOTE: mock's cache and ccache are under ./cache folder, please configure temporary storage when building on kubernetes CI/CD_
