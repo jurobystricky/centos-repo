@@ -52,7 +52,7 @@ cmd_build_package() {
     fi
 
     # check whether mock docker image exist
-    if [[ "$(docker images -q $mock_docker_image 2> /dev/null)" == "" ]]; then
+    if [[ "$(sudo docker images -q $mock_docker_image 2> /dev/null)" == "" ]]; then
         echo "Build intel-linux-mock-docker container..."
         cd $top_dir/tools/mock-build-docker && ./build-container.sh
     fi
@@ -94,7 +94,7 @@ cmd_build_package() {
 
     while [ : ]
     do
-        sleep 1
+        sleep 5
         mock_pid=$(pgrep mock-build.sh)
         if [ -z $mock_pid ]; then
             break
