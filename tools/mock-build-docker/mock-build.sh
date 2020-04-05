@@ -68,9 +68,18 @@ download_install_upstream_src() {
     echo "SRC file name: $src_file_name"
     
     download_file $build_path/$src_file_name $upstream_url $md5sum_val
-    mkdir -p $build_path/rpmbuild
+    mkdir -p $build_path/rpmbuild/{BUILD,RPMS,S{OURCE,PEC,RPM}S
     echo "%_topdir $build_path/rpmbuild" > ~/.rpmmacros
-    rpm -i $build_path/$src_file_name
+    extension="${src_file_name##*.}"
+    
+    case $extension in
+        rpm)
+            rpm -i $build_path/$src_file_name
+            ;;
+        *)
+            echo "Unknow file type: $extension"
+            ;;
+    esac
 }
 
 copy_patches_to_src() {

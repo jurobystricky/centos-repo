@@ -10,7 +10,7 @@ package_build=""
 mock_docker_image="intel-linux-mock-build"
 
 usage() {
-    echo "Usage: $0 <list|build> [-r <repo_dir>] [-p package_name]"
+    echo "Usage: $0 <list|build|init-mock> [-r <repo_dir>] [-p package_name]"
     exit 1
 }
 
@@ -27,9 +27,9 @@ cmd_list_packages() {
     packages=()
     for i in ${package_category_dirs[@]}; do
         if [ -d $repo_dir/$i ]; then
-            folders+=$(ls $repo_dir/$i)
+            folders=$(ls $repo_dir/$i)
             for f in ${folders[@]}; do
-                packages+=($f-\($i\))
+                packages+=( $f-\($i\) )
             done
         fi
     done
@@ -152,6 +152,9 @@ parse_cmd() {
                 esac
             done
             cmd_build_package
+            ;;
+        init-mock)
+            $top_dir/tools/mock-build-docker/build-container.sh
             ;;
         *)
             usage

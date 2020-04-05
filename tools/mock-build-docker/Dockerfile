@@ -16,12 +16,13 @@ COPY logging.ini /etc/mock/
 # So the "prepare-local-mock-repo.sh" will download ccache rpm from Fedora repo
 # and establish a local mock repo for mock use.
 RUN [ "/usr/bin/prepare-local-mock-repo.sh" ]
-RUN echo "config_opts['cache_topdir'] = '/opt/cache/mock'" >> /etc/mock/site-defaults.cfg
-RUN echo "config_opts['docker_unshare_warning'] = False" >> /etc/mock/site-defaults.cfg
-RUN echo "config_opts['plugin_conf']['ccache_enable'] = True " >> /etc/mock/site-defaults.cfg
-RUN echo "config_opts['plugin_conf']['ccache_opts']['max_cache_size'] = '8G' " >> /etc/mock/site-defaults.cfg
-RUN echo "config_opts['plugin_conf']['ccache_opts']['compress'] = None " >> /etc/mock/site-defaults.cfg
-RUN echo "config_opts['plugin_conf']['ccache_opts']['dir'] = '/opt/cache/ccache' " >> /etc/mock/site-defaults.cfg
+RUN echo -e " \n\
+config_opts['cache_topdir'] = '/opt/cache/mock' \n\
+config_opts['docker_unshare_warning'] = False \n\
+config_opts['plugin_conf']['ccache_enable'] = True \n\
+config_opts['plugin_conf']['ccache_opts']['max_cache_size'] = '8G' \n\
+config_opts['plugin_conf']['ccache_opts']['compress'] = None \n\
+config_opts['plugin_conf']['ccache_opts']['dir'] = '/opt/cache/ccache' " >> /etc/mock/site-defaults.cfg
 
 RUN useradd -u 1000 builder && usermod -a -G mock builder
 
