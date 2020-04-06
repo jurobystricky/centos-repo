@@ -1,0 +1,65 @@
+diff --git a/sgx_encl.c b/sgx_encl.c
+index a03c30a..2031de7 100644
+--- a/sgx_encl.c
++++ b/sgx_encl.c
+@@ -250,7 +250,7 @@ static bool sgx_process_add_page_req(struct sgx_add_page_req *req,
+ 		return false;
+ 	}
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0) || (RHEL_MAJOR == 8))
+ 	ret = vmf_insert_pfn(vma, encl_page->addr, PFN_DOWN(epc_page->pa));
+ 	if (ret != VM_FAULT_NOPAGE) {
+ #else
+diff --git a/sgx_encl2.c b/sgx_encl2.c
+index 0df9b00..ace4057 100644
+--- a/sgx_encl2.c
++++ b/sgx_encl2.c
+@@ -169,7 +169,7 @@ struct sgx_encl_page *sgx_encl_augment(struct vm_area_struct *vma,
+ 		goto out;
+ 	}
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0) || (RHEL_MAJOR == 8))
+ 	ret = vmf_insert_pfn(vma, encl_page->addr, PFN_DOWN(epc_page->pa));
+ 	sgx_put_page(epc_va);
+ 	sgx_put_page(secs_va);
+diff --git a/sgx_page_cache.c b/sgx_page_cache.c
+index ed7c6be..ac5c1c5 100644
+--- a/sgx_page_cache.c
++++ b/sgx_page_cache.c
+@@ -87,7 +87,7 @@ static struct task_struct *ksgxswapd_tsk;
+ static DECLARE_WAIT_QUEUE_HEAD(ksgxswapd_waitq);
+ 
+ static int sgx_test_and_clear_young_cb(pte_t *ptep,
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0))
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) && (RHEL_MAJOR != 8))
+ 		pgtable_t token,
+ #endif
+ 		unsigned long addr, void *data)
+diff --git a/sgx_util.c b/sgx_util.c
+index 25b18a9..6d0fd1d 100644
+--- a/sgx_util.c
++++ b/sgx_util.c
+@@ -319,7 +319,7 @@ static struct sgx_encl_page *sgx_do_fault(struct vm_area_struct *vma,
+ 	epc_page = NULL;
+ 	list_add_tail(&entry->epc_page->list, &encl->load_list);
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 20, 0) || (RHEL_MAJOR == 8))
+ 	rc = vmf_insert_pfn(vma, entry->addr, PFN_DOWN(entry->epc_page->pa));
+ 	if (rc != VM_FAULT_NOPAGE) {
+ #else
+diff --git a/sgx_vma.c b/sgx_vma.c
+index 34ec7bb..e3ef910 100644
+--- a/sgx_vma.c
++++ b/sgx_vma.c
+@@ -102,7 +102,7 @@ static void sgx_vma_close(struct vm_area_struct *vma)
+ 	kref_put(&encl->refcount, sgx_encl_release);
+ }
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,1,0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,1,0) || (RHEL_MAJOR == 8))
+ static unsigned int sgx_vma_fault(struct vm_fault *vmf)
+ {
+ 	struct vm_area_struct *vma = vmf->vma;
