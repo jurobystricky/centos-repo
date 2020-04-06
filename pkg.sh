@@ -70,10 +70,14 @@ cmd_build_package() {
         sudo mkdir -p /opt/cache
         sudo mkdir -p /intel-linux
 
-        sudo rm /intel-linux/repo
-        sudo rm /intel-linux/build
-        sudo ln -s $top_dir/repo /intel-linux/repo
-        sudo ln -s $top_dir/build /intel-linux/build
+        #sudo rm /intel-linux/repo
+        #sudo rm /intel-linux/build
+        if [[ ! -d /intel-linux/repo ]]; then
+            sudo ln -s $top_dir/repo /intel-linux/repo
+        fi
+        if [[ ! -d /intel-linux/build ]]; then
+            sudo ln -s $top_dir/build /intel-linux/build
+        fi
     fi
 
     echo "Repo dir: $repo_dir"
