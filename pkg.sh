@@ -70,6 +70,8 @@ cmd_build_package() {
         sudo mkdir -p /opt/cache
         sudo mkdir -p /intel-linux
 
+        sudo rm /intel-linux/repo
+        sudo rm /intel-linux/build
         sudo ln -s $top_dir/repo /intel-linux/repo
         sudo ln -s $top_dir/build /intel-linux/build
     fi
