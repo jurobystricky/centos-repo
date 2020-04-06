@@ -70,8 +70,6 @@ cmd_build_package() {
         sudo mkdir -p /opt/cache
         sudo mkdir -p /intel-linux
 
-        #sudo rm /intel-linux/repo
-        #sudo rm /intel-linux/build
         if [[ ! -d /intel-linux/repo ]]; then
             sudo ln -s $top_dir/repo /intel-linux/repo
         fi
@@ -165,9 +163,18 @@ parse_cmd() {
             done
             cmd_list_packages
             ;;
-        build)    
+        build)
+            distro=$(cat /etc/*-release | grep "CentOS Linux 8")
+            if [[ ! -z $distro ]]; then
+                echo "Current system is CentOS, so use native build by default"
+                build_in_docker=0
+            else
+                echo "Current system is not CentOS, so use docker build by default"
+                build_in_docker=1
+            fi
+
             shift
-            while getopts ":rp:n" opt; do
+            while getopts ":rp:nd" opt; do
                 case $opt in
                     r)
                         repo_dir=$(readlink -f $OPTARG)
@@ -176,8 +183,12 @@ parse_cmd() {
                         package_build=$OPTARG
                         ;;
                     n)
-                        echo "Native build"
+                        echo "Force Native build"
                         build_in_docker=0
+                        ;;
+                    d)
+                        echo "Force Docker build"
+                        build_in_docker=1
                         ;;
                     *)
                         echo "Invalid Options - $opt"
