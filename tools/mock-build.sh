@@ -91,6 +91,11 @@ copy_patches_to_src() {
 # Build rpm via mock
 #
 build_rpm() {
+    if ! command -v mock >/dev/null 2>&1; then
+        echo "Please install mock for build via 'dnf install epel-release mock'"
+        exit 1
+    fi
+
     echo "Build RPM..."
     mock -r intel-linux-centos \
         --resultdir=$build_path/result \
