@@ -5,6 +5,7 @@ RUN yum -y --setopt="tsflags=nodocs" install epel-release && \
     yum -y --setopt="tsflags=nodocs" install mock rpmdevtools wget
 RUN yum clean all && rm -rf /var/cache/yum/
 
+
 COPY intel-linux-centos.cfg /etc/mock
 COPY prepare-local-mock-repo.sh /usr/bin/
 COPY mock-build.sh /usr/bin/
@@ -15,13 +16,6 @@ COPY mock-build-docker/logging.ini /etc/mock/
 # So the "prepare-local-mock-repo.sh" will download ccache rpm from Fedora repo
 # and establish a local mock repo for mock use.
 RUN [ "/usr/bin/prepare-local-mock-repo.sh" ]
-RUN echo -e " \n\
-config_opts['cache_topdir'] = '/opt/cache/mock' \n\
-config_opts['docker_unshare_warning'] = False \n\
-config_opts['plugin_conf']['ccache_enable'] = True \n\
-config_opts['plugin_conf']['ccache_opts']['max_cache_size'] = '8G' \n\
-config_opts['plugin_conf']['ccache_opts']['compress'] = None \n\
-config_opts['plugin_conf']['ccache_opts']['dir'] = '/opt/cache/ccache' " >> /etc/mock/site-defaults.cfg
 
 RUN useradd -u 1000 builder && usermod -a -G mock builder
 

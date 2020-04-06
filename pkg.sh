@@ -45,6 +45,8 @@ cmd_list_packages() {
 #         -r <repo path>
 #
 cmd_build_package() {
+    trap stop_build 1 2 3 6
+    
     # check whether docker service installed
     if ! command -v docker >/dev/null 2>&1; then
         echo "Please install docker environment for build"
@@ -154,7 +156,7 @@ parse_cmd() {
             cmd_build_package
             ;;
         init-mock)
-            $top_dir/tools/mock-build-docker/build-container.sh
+            $top_dir/tools/build-container.sh
             ;;
         *)
             usage
@@ -162,5 +164,4 @@ parse_cmd() {
     esac
 }
 
-trap stop_build 1 2 3 6
 parse_cmd $@
