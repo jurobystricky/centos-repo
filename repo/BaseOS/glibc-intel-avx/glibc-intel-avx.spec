@@ -216,6 +216,9 @@ Requires(pre): basesystem
 # the package and should not be examined by any other tool.
 %global __filter_GLIBC_PRIVATE 1
 
+# Disable the building of the debug package(s).
+%define debug_package %{nil}
+
 BuildRequires: audit-libs-devel >= 1.1.3, sed >= 3.95, libcap-devel, gettext
 BuildRequires: procps-ng, util-linux, gawk
 BuildRequires: systemtap-sdt-devel
