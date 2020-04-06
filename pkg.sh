@@ -8,6 +8,7 @@ cache_dir=$top_dir/cache
 package_category_dirs=(BaseOS AppStream)
 package_build=""
 mock_docker_image="intel-linux-mock-build"
+build_in_docker=1
 
 usage() {
     echo "Usage: $0 <list|build|init-mock> [-r <repo_dir>] [-p package_name]"
@@ -45,18 +46,32 @@ cmd_list_packages() {
 #         -r <repo path>
 #
 cmd_build_package() {
-    trap stop_build 1 2 3 6
-    
-    # check whether docker service installed
-    if ! command -v docker >/dev/null 2>&1; then
-        echo "Please install docker environment for build"
-        exit 1
-    fi
+    mkdir -p $build_dir
+    mkdir -p $cache_dir
 
-    # check whether mock docker image exist
-    if [[ "$(sudo docker images -q $mock_docker_image 2> /dev/null)" == "" ]]; then
-        echo "Build intel-linux-mock-docker container..."
-        cd $top_dir/tools/mock-build-docker && ./build-container.sh
+    if ((build_in_docker)); then
+        # check whether docker service installed
+        if ! command -v docker >/dev/null 2>&1; then
+            echo "Please install docker environment for build"
+            exit 1
+        fi
+
+        # check whether mock docker image exist
+        if [[ "$(sudo docker images -q $mock_docker_image 2> /dev/null)" == "" ]]; then
+            echo "Build intel-linux-mock-docker container..."
+            cd $top_dir/tools/ && ./build-container.sh
+        fi
+    else
+        distro=$(cat /etc/*-release | grep "CentOS Linux 8")
+        if [[ -z $distro ]]; then
+            echo "Native build can only be taken on CentOS Linux 8."
+            exit 1
+        fi
+        sudo mkdir -p /opt/cache
+        sudo mkdir -p /intel-linux
+
+        sudo ln -s $top_dir/repo /intel-linux/repo
+        sudo ln -s $top_dir/build /intel-linux/build
     fi
 
     echo "Repo dir: $repo_dir"
@@ -81,27 +96,34 @@ cmd_build_package() {
         exit 1
     fi
 
-    mkdir -p $build_dir
-    mkdir -p $cache_dir
-    sudo docker run \
-        --cap-add=SYS_ADMIN \
-        -e http_proxy=$http_proxy \
-        -e https_proxy=$http_proxy \
-        -e PACKAGE=$package_build \
-        -v $repo_dir:/intel-linux/repo \
-        -v $build_dir:/intel-linux/build \
-        -v $cache_dir:/opt/cache \
-        $mock_docker_image \
-        /usr/bin/mock-build.sh &
+    if ((build_in_docker)); then
+        trap stop_build 1 2 3 6
+        sudo docker run \
+            --cap-add=SYS_ADMIN \
+            -e http_proxy=$http_proxy \
+            -e https_proxy=$http_proxy \
+            -e PACKAGE=$package_build \
+            -v $repo_dir:/intel-linux/repo \
+            -v $build_dir:/intel-linux/build \
+            -v $cache_dir:/opt/cache \
+            $mock_docker_image \
+            /usr/bin/mock-build.sh &
 
-    while [ : ]
-    do
-        sleep 5
-        mock_pid=$(pgrep mock-build.sh)
-        if [[ -z "$mock_pid" ]]; then
-            break
-        fi
-    done
+        while [ : ]
+        do
+            sleep 5
+            mock_pid=$(pgrep mock-build.sh)
+            if [[ -z "$mock_pid" ]]; then
+                break
+            fi
+        done
+    else
+        export PACKAGE=$package_build
+        sudo $top_dir/tools/prepare-local-mock-repo.sh
+        sudo cp $top_dir/tools/intel-linux-centos.cfg /etc/mock/
+        $top_dir/tools/mock-build-docker/mock-build.sh        
+    fi
+
     echo "Done~"
 }
 
@@ -139,13 +161,17 @@ parse_cmd() {
             ;;
         build)    
             shift
-            while getopts ":rp:" opt; do
+            while getopts ":rp:n" opt; do
                 case $opt in
                     r)
                         repo_dir=$(readlink -f $OPTARG)
                         ;;
                     p)
                         package_build=$OPTARG
+                        ;;
+                    n)
+                        echo "Native build"
+                        build_in_docker=0
                         ;;
                     *)
                         echo "Invalid Options - $opt"
