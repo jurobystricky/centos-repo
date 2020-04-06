@@ -3,13 +3,12 @@ From centos:8.1.1911
 RUN yum -y --setopt="tsflags=nodocs" update
 RUN yum -y --setopt="tsflags=nodocs" install epel-release && \
     yum -y --setopt="tsflags=nodocs" install mock rpmdevtools wget
-RUN yum clean all && \
-	rm -rf /var/cache/yum/
+RUN yum clean all && rm -rf /var/cache/yum/
 
 COPY intel-linux-centos.cfg /etc/mock
 COPY prepare-local-mock-repo.sh /usr/bin/
 COPY mock-build.sh /usr/bin/
-COPY logging.ini /etc/mock/
+COPY mock-build-docker/logging.ini /etc/mock/
 
 # Prepare mock local repo and configurations. ccache will be used to accelerate
 # build speed, but ccache is not provided by CentOS8 or CentOS8 stream repo.
@@ -26,12 +25,11 @@ config_opts['plugin_conf']['ccache_opts']['dir'] = '/opt/cache/ccache' " >> /etc
 
 RUN useradd -u 1000 builder && usermod -a -G mock builder
 
-VOLUME [ "/repo" ]
-VOLUME [ "/build" ]
+VOLUME [ "/intel-linux/repo" ]
+VOLUME [ "/intel-linux/build" ]
 VOLUME [ "/opt/cache" ]
 
-RUN chown -R builder:mock /repo
-RUN chown -R builder:mock /build && chmod g+w /build
+RUN chown -R builder:mock /intel-linux
 RUN chown -R builder:mock /opt/cache && chmod g+w /opt/cache
 
 ENV PACKAGE=""

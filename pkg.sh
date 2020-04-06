@@ -86,8 +86,8 @@ cmd_build_package() {
         -e http_proxy=$http_proxy \
         -e https_proxy=$http_proxy \
         -e PACKAGE=$package_build \
-        -v $repo_dir:/repo \
-        -v $build_dir:/build \
+        -v $repo_dir:/intel-linux/repo \
+        -v $build_dir:/intel-linux/build \
         -v $cache_dir:/opt/cache \
         $mock_docker_image \
         /usr/bin/mock-build.sh &

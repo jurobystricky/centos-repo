@@ -1,7 +1,7 @@
 #!/bin/bash
 
-repo_dir="/repo"
-build_root_dir="/build"
+repo_dir="/intel-linux/repo"
+build_root_dir="/intel-linux/build"
 build_path=""
 package_category_dirs=(BaseOS AppStream)
 package_path=""
