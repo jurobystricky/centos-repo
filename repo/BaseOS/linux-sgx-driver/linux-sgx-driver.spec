@@ -34,5 +34,14 @@ cd linux-sgx-driver-sgx_driver_%{version}
 
 cd linux-sgx-driver-sgx_driver_%{version}
 make -C /lib/modules/%{kversion}-%{krelease}.el8.x86_64/build \
-    M=/builddir/build/BUILD/sgx-kmod-%{version}/linux-sgx-driver-sgx_driver_%{version} modules
+    M=/builddir/build/BUILD/sgx-kmod-%{version}/linux-sgx-driver-sgx_driver_%{version} \
+    modules
 
+mkdir -p %{buildroot}/lib/modules/%{kversion}-%{krelease}.el8.x86_64/kernel/drivers/intel/sgx
+cp isgx.ko %{buildroot}/lib/modules/%{kversion}-%{krelease}.el8.x86_64/kernel/drivers/intel/sgx
+mkdir -p %{buildroot}/etc/modules-load.d
+echo "isgx" >> %{buildroot}/etc/modules-load.d/sgx.conf
+
+%files
+/etc/modules-load.d/sgx.conf
+/lib/modules/4.18.0-187.el8.x86_64/kernel/drivers/intel/sgx/isgx.ko
