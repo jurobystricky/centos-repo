@@ -198,7 +198,7 @@ parse_cmd() {
             done
             cmd_build_package
             ;;
-        init-mock)
+        init-mock-docker)
             $top_dir/tools/build-container.sh
             ;;
         *)
