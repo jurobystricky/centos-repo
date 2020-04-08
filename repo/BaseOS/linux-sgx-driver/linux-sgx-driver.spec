@@ -14,6 +14,8 @@ BuildRequires: kernel-headers = %{kversion}
 BuildRequires: kernel-devel = %{kversion}
 BuildRequires: elfutils-libelf-devel
 
+Requires: kernel = %{kversion}
+
 Source0: sgx_driver_2.6.tar.gz
 
 Patch0: rhel_8.patch
