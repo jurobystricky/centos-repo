@@ -7,7 +7,6 @@ RUN yum clean all && rm -rf /var/cache/yum/
 
 
 COPY intel-linux-centos.cfg /etc/mock
-COPY prepare-local-mock-repo.sh /usr/bin/
 COPY mock-build.sh /usr/bin/
 COPY mock-build-docker/logging.ini /etc/mock/
 
