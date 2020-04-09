@@ -102,6 +102,7 @@ build_rpm() {
         --rootdir=$build_path/buildroot \
         --no-cleanup-after \
         --enable-plugin=ccache \
+        --enable-network \
         --old-chroot \
         --rebuild \
         --spec $package_path/$PACKAGE.spec \
