@@ -8,6 +8,7 @@ URL:     https://github.com/intel/linux-sgx
 BuildRequires: git wget autoconf automake libtool cmake
 BuildRequires: ocaml ocaml-ocamlbuild
 BuildRequires: openssl-devel libcurl-devel protobuf-devel
+BuildRequires: /usr/bin/pathfix.py
 
 Source0: sgx_%{version}.tar.gz
 
@@ -26,7 +27,8 @@ make sdk_no_mitigation DEBUG=1
 
 %install
 mkdir -p %{buildroot}/opt/sgxsdk
-find build/linux/ -type f -exec cp {} %{buildroot}/opt/sgxsdk \;
+cp -r build/linux/* %{buildroot}/opt/sgxsdk
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{buildroot}/opt/sgxsdk/
 
 %files
 /opt/sgxsdk/*
