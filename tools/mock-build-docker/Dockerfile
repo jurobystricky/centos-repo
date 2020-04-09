@@ -11,11 +11,16 @@ COPY prepare-local-mock-repo.sh /usr/bin/
 COPY mock-build.sh /usr/bin/
 COPY mock-build-docker/logging.ini /etc/mock/
 
-# Prepare mock local repo and configurations. ccache will be used to accelerate
-# build speed, but ccache is not provided by CentOS8 or CentOS8 stream repo.
-# So the "prepare-local-mock-repo.sh" will download ccache rpm from Fedora repo
-# and establish a local mock repo for mock use.
-RUN [ "/usr/bin/prepare-local-mock-repo.sh" ]
+RUN echo -e " \n\
+config_opts['cache_topdir'] = '/opt/cache/mock' \n\
+config_opts['docker_unshare_warning'] = False \n\
+config_opts['plugin_conf']['ccache_enable'] = True \n\
+config_opts['plugin_conf']['ccache_opts']['max_cache_size'] = '8G' \n\
+config_opts['plugin_conf']['ccache_opts']['compress'] = None \n\
+config_opts['plugin_conf']['ccache_opts']['dir'] = '/opt/cache/ccache' \n\
+config_opts['http_proxy'] = '$http_proxy' \n\
+config_opts['https_proxy'] = '$https_proxy' \n\
+config_opts['no_proxy'] = '$no_proxy' " >> /etc/mock/site-defaults.cfg
 
 RUN useradd -u 1000 builder && usermod -a -G mock builder
 
