@@ -123,7 +123,6 @@ cmd_build_package() {
         done
     else
         export PACKAGE=$package_build
-        sudo $top_dir/tools/prepare-local-mock-repo.sh
         sudo cp $top_dir/tools/intel-linux-centos.cfg /etc/mock/
         $top_dir/tools/mock-build.sh
     fi
