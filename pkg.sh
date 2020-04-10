@@ -163,6 +163,18 @@ cmd_build_all() {
 }
 
 #
+# Judge whether current OS is CentOS
+#
+is_centos() {
+    distro=$(cat /etc/*-release | grep "CentOS Linux 8")
+    if [[ -z $distro ]]; then
+        echo 0
+    else
+        echo 1
+    fi
+}
+
+#
 # Stop current build when CTRL+C
 #
 stop_build() {
@@ -174,6 +186,8 @@ stop_build() {
 }
 
 parse_cmd() {
+    build_in_docker=$((1-$(is_centos)))
+
     if [ -z $1 ]; then
         usage
     fi
@@ -198,15 +212,6 @@ parse_cmd() {
             cmd_list_packages
             ;;
         build)
-            distro=$(cat /etc/*-release | grep "CentOS Linux 8")
-            if [[ ! -z $distro ]]; then
-                echo "Current system is CentOS, so use native build by default"
-                build_in_docker=0
-            else
-                echo "Current system is not CentOS, so use docker build by default"
-                build_in_docker=1
-            fi
-
             shift
             while getopts ":rp:nd" opt; do
                 case $opt in
