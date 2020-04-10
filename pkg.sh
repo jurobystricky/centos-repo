@@ -4,11 +4,13 @@ curr_dir=$(readlink -f $(dirname ${0}))
 top_dir=$curr_dir
 repo_dir=$top_dir/repo
 build_dir=$top_dir/build
+rpms_dir=$build_dir/rpms
 cache_dir=$top_dir/cache
 package_category_dirs=(BaseOS AppStream)
 package_build=""
 mock_docker_image="intel-linux-mock-build"
 build_in_docker=1
+verbose=0
 
 usage() {
     echo "Usage: $0 <list|build|init-mock> [-r <repo_dir>] [-p package_name]"
@@ -24,19 +26,17 @@ cmd_list_packages() {
     echo "List all packages:"
 
     cd $repo_dir
-
-    packages=()
     for i in ${package_category_dirs[@]}; do
         if [ -d $repo_dir/$i ]; then
             folders=$(ls $repo_dir/$i)
             for f in ${folders[@]}; do
-                packages+=( $f-\($i\) )
+                if ((verbose)); then
+                    echo -e "  $f \t\t($i)"
+                else
+                    echo "  $f"
+                fi
             done
         fi
-    done
-
-    for p in ${packages[@]}; do
-        echo "  => $p"
     done
 }
 
@@ -132,6 +132,37 @@ cmd_build_package() {
 }
 
 #
+# Initialize mock docker. On non-CentOS system, the package build is via mock
+# container; while on CentOS system, it is native.
+#
+cmd_init_mock_docker() {
+    echo "Build mock build docker image..."
+    $top_dir/tools/build-container.sh
+    echo "Done~"
+}
+
+#
+# Build all packages in repo directory.
+#
+cmd_build_all() {
+    mkdir -p $rpms_dir
+
+    cd $repo_dir
+    for i in ${package_category_dirs[@]}; do
+        if [ -d $repo_dir/$i ]; then
+            folders=$(ls $repo_dir/$i)
+            for f in ${folders[@]}; do
+                package_build=$f
+                cmd_build_package
+                echo "Copy results RPMs to rpm repo directory..."
+                cp $build_dir/$f/result/*.rpm $rpms_dir
+                echo "========================================="
+            done
+        fi
+    done
+}
+
+#
 # Stop current build when CTRL+C
 #
 stop_build() {
@@ -150,10 +181,13 @@ parse_cmd() {
     case $1 in
         list)
             shift
-            while getopts ":r:" opt; do
+            while getopts ":r:v" opt; do
                 case $opt in
                     r)
                         repo_dir=$(readlink -f $OPTARG)
+                        ;;
+                    v)
+                        verbose=1
                         ;;
                     *)
                         echo "Invalid Options - $opt"
@@ -199,7 +233,10 @@ parse_cmd() {
             cmd_build_package
             ;;
         init-mock-docker)
-            $top_dir/tools/build-container.sh
+            cmd_init_mock_docker
+            ;;
+        build-all)
+            cmd_build_all
             ;;
         *)
             usage
