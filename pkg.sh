@@ -101,8 +101,10 @@ cmd_build_package() {
     fi
 
     if ((build_in_docker)); then
-        trap stop_build 1 2 3 6
-        sudo docker run \
+        #
+        # To stop build in docker, press Ctrl + C
+        #
+        ID=$(sudo docker run \
             --cap-add=SYS_ADMIN \
             -e http_proxy=$http_proxy \
             -e https_proxy=$http_proxy \
@@ -110,20 +112,15 @@ cmd_build_package() {
             -v $repo_dir:/intel-linux/repo \
             -v $build_dir:/intel-linux/build \
             -v $cache_dir:/opt/cache \
+            -t -i -d \
             $mock_docker_image \
-            /usr/bin/mock-build.sh &
-
-        while [ : ]
-        do
-            sleep 5
-            mock_pid=$(pgrep mock-build.sh)
-            if [[ -z "$mock_pid" ]]; then
-                break
-            fi
-        done
+            /usr/bin/mock-build.sh)
+        sudo docker attach $ID
     else
         export PACKAGE=$package_build
-        sudo cp $top_dir/tools/intel-linux-centos.cfg /etc/mock/
+        if [[ ! -f /etc/mock/intel-linux-centos.cfg ]]; then
+            sudo cp $top_dir/tools/intel-linux-centos.cfg /etc/mock/
+        fi
         $top_dir/tools/mock-build.sh
     fi
 
@@ -171,17 +168,6 @@ is_centos() {
     else
         echo 1
     fi
-}
-
-#
-# Stop current build when CTRL+C
-#
-stop_build() {
-    mock_pid=$(pgrep mock-build.sh)
-    echo -e "\n===> Kill current package build, PID: $mock_pid <==="
-    if [ ! -z $mock_pid ]; then
-        kill -9 $mock_pid
-    fi    
 }
 
 parse_cmd() {
