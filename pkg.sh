@@ -145,6 +145,15 @@ cmd_init_mock_docker() {
 # Build all packages in repo directory.
 #
 cmd_build_all() {
+    distro=$(cat /etc/*-release | grep "CentOS Linux 8")
+    if [[ ! -z $distro ]]; then
+        echo "Current system is CentOS, so use native build by default"
+        build_in_docker=0
+    else
+        echo "Current system is not CentOS, so use docker build by default"
+        build_in_docker=1
+    fi
+
     mkdir -p $rpms_dir
 
     cd $repo_dir
