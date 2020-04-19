@@ -1,0 +1,114 @@
+document: modulemd
+version: 2
+data:
+    # === Information about this module ==================================
+    # (Can be copied from the main RPM package, but doesn't need to be)
+    name: sgx
+    summary: SGX features
+    description: >-
+        A module for all SGX packages for a complete SGX stack.
+
+    # === License of this modulemd file ==================================
+    # (Package licenses will be added automatically by the build system)
+    license:
+        module:
+            - MIT
+
+    # === Modular dependencies ===========================================
+    # (For which Fedora releases to build?)
+    dependencies:
+      - buildrequires:
+            platform: [el8] # <- Build for all Fedora releases
+        requires:
+            platform: [el8] # <- Run on all Fedora releases
+
+    # === Module API (optional, but encouraged) ==========================
+    # (Which packages are API-stable?)
+    api:
+        rpms:
+            - sgx-kmod
+            - sgx-sdk
+
+    # === Installation profiles (optional, but encouraged) ===============
+    # (Helping users with installation by providing predefined groups)
+    profiles:
+        default:  # <- Name of the profile
+            description: A standard installation.
+            rpms:
+                - sgx-kmod
+                - sgx-sdk
+
+        cascadelake:      # <- Name of the profile
+            description: for Intel cascadelake platform
+            rpms:
+                - sgx-kmod
+                - sgx-sdk
+
+    # === Packages in this module ========================================
+    # (Referenced by their dist-git repo name + branch name)
+    components:
+        rpms:
+            sgx-kmod:  # <- Source RPM package name
+                ref: 2.6-1    # <- Branch name in dist-git
+                rationale: Provides the core functionality.
+            sgx-sdk: # <- Source RPM package name
+                ref: 2.9-1 # <- Branch name in dist-git
+                rationale: Web UI for the first-package.
+
+---
+document: modulemd
+version: 2
+data:
+    # === Information about this module ==================================
+    # (Can be copied from the main RPM package, but doesn't need to be)
+    name: glibc-avx
+    summary: glibc AVX2/AVX512 implementation
+    description: >-
+            glibc AVX2/AVX512 implementation
+    
+    # === License of this modulemd file ==================================
+    # (Package licenses will be added automatically by the build system)
+    license:
+        module:
+            - MIT
+
+    # === Modular dependencies ===========================================
+    # (For which Fedora releases to build?)
+    dependencies:
+        - buildrequires:
+            platform: [el8] # <- Build for all Fedora releases
+        requires:
+            platform: [el8] # <- Run on all Fedora releases
+
+    # === Module API (optional, but encouraged) ==========================
+    # (Which packages are API-stable?)
+    api:
+        rpms:
+            - glibc-intel-avx
+            - phoronix-test-suite
+
+    # === Installation profiles (optional, but encouraged) ===============
+    # (Helping users with installation by providing predefined groups)
+    profiles:
+        default:  # <- Name of the profile
+            description: A standard installation.
+            rpms:
+                - glibc-intel-avx
+                - phoronix-test-suite
+
+        cascadelake:      # <- Name of the profile
+            description: for Intel cascadelake platform
+            rpms:
+                - glibc-intel-avx
+                - phoronix-test-suite
+
+    # === Packages in this module ========================================
+    # (Referenced by their dist-git repo name + branch name)
+    components:
+        rpms:
+            glibc-intel-avx:  # <- Source RPM package name
+                ref: 2.28-72    # <- Branch name in dist-git
+                rationale: Provides the core functionality.
+            phoronix-test-suite: # <- Source RPM package name
+                ref: 9.6.0m1 # <- Branch name in dist-git
+                rationale: Web UI for the first-package.
