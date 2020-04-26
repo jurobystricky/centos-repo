@@ -51,3 +51,4 @@ After build,
 - Optimized srpm and rpms at `./build/<package_name>/result/`
 
 _NOTE: mock's cache and ccache are under `./cache` folder, please configure temporary storage when building on kubernetes CI/CD_
+
