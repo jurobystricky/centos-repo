@@ -13,7 +13,7 @@ build_in_docker=1
 verbose=0
 
 usage() {
-    echo "Usage: $0 <list|build|init-mock> [-r <repo_dir>] [-p package_name]"
+    echo "Usage: $0 <list|build|init-mock-docker> [-r <repo_dir>] [-p package_name]"
     exit 1
 }
 
