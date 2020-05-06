@@ -11,13 +11,18 @@ gpgkey=https://mirrors.tuna.tsinghua.edu.cn/epel/RPM-GPG-KEY-EPEL-8 \n\
 " >> /etc/yum.repos.d/epel.repo
 
 RUN yum -y --setopt="tsflags=nodocs" update
-RUN yum -y --setopt="tsflags=nodocs" install mock rpmdevtools wget
-RUN yum clean all && rm -rf /var/cache/yum/
+RUN yum -y --setopt="tsflags=nodocs" install rpmdevtools wget
 
+COPY mock-build-docker/*.rpm /
+RUN yum -y localinstall /mock-core-configs-31.6-1.el8.noarch.rpm
+RUN yum -y localinstall /mock-1.4.21-1.git.0.5ec312e.el8.noarch.rpm
+
+RUN yum clean all && rm -rf /var/cache/yum/
 
 COPY intel-linux-centos.cfg /etc/mock
 COPY mock-build.sh /usr/bin/
 COPY mock-build-docker/logging.ini /etc/mock/
+
 
 RUN echo -e " \n\
 config_opts['cache_topdir'] = '/opt/cache/mock' \n\
