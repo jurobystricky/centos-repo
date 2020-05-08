@@ -1,0 +1,6 @@
+spec.template: linux-sgx-sdk.spec
+sources:
+    - filename: sgx_2.9.tar.gz
+      url: https://github.com/intel/linux-sgx/archive/sgx_2.9.tar.gz
+      hash: 0cd91ec33ff496219f07ae2969d8d034
+

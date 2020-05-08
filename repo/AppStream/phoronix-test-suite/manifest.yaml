@@ -1,0 +1,6 @@
+spec.template: phoronix-test-suite.spec
+sources:
+    - filename: phoronix-test-suite-9.6.0m1.tar.gz
+      url: https://github.com/phoronix-test-suite/phoronix-test-suite/archive/v9.6.0m1.tar.gz
+      hash: 3933b0dcb064b4c03c657c2aef7cc658
+

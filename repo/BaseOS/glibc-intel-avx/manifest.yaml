@@ -1,0 +1,6 @@
+spec.template: glibc-intel-avx.spec
+sources:
+    - filename: glibc-2.28-72.el8_1.1.src.rpm
+      url: http://vault.centos.org/8.1.1911/BaseOS/Source/SPackages/glibc-2.28-72.el8_1.1.src.rpm
+      hash: a59fad882e1543ee0ef4cde9686a2ca2
+

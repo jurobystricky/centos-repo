@@ -1,0 +1,6 @@
+spec.template: linux-sgx-driver.spec
+sources:
+    - filename: sgx_driver_2.6.tar.gz
+      url: https://github.com/intel/linux-sgx-driver/archive/sgx_driver_2.6.tar.gz
+      hash: 79212066df46d52826860dd3136e619e
+

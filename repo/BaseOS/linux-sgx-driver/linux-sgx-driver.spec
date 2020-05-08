@@ -1,5 +1,5 @@
 %define kversion 4.18.0
-%define krelease 187
+%define krelease 147
 
 Name:    sgx-kmod
 Version: 2.6
