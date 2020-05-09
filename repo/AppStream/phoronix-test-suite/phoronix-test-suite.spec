@@ -9,7 +9,7 @@ URL: http://www.phoronix-test-suite.com/
 
 Source: %{name}-%{version}.tar.gz
 
-Requires: php-cli, php-xml, php-json
+Requires: php-cli, php-xml, php-json, which
 
 %description
 @file_get_contents("pts-core/static/short-description.txt") . 
