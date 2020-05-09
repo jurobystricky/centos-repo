@@ -102,7 +102,8 @@ cmd_build_package() {
         -v $repo_dir:/repo \
         -v $build_dir:/build \
         -t -i -d \
-        $docker_registry/$pkg_build_docker)
+        $docker_registry/$pkg_build_docker \
+        /pkg-build/launch-build.sh)
     sudo docker attach $ID
 
     echo "Done~"
