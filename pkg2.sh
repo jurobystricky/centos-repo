@@ -10,6 +10,7 @@ base_repo_tools_dir=$top_dir/base-repo-tools
 package_category_dirs=(BaseOS AppStream)
 package_build=""
 pkg_build_docker="il-pkg-build"
+docker_registry="library"
 build_in_docker=1
 verbose=0
 
@@ -61,24 +62,11 @@ cmd_list_packages() {
 cmd_build_package() {
     mkdir -p $build_dir
 
-    if ((build_in_docker)); then
-        # check whether docker service installed
-        check_cmd docker
-
-        # check whether mock docker image exist
-        if [[ "$(sudo docker images -q $pkg_build_docker 2> /dev/null)" == "" ]]; then
-            cmd_init_build_docker
-        fi
-    else
-        #distro=$(cat /etc/*-release | grep "CentOS Linux 8")
-        #if [[ -z $distro ]]; then
-        #    echo "Native build can only be taken on CentOS Linux 8."
-        #    exit 1
-        #fi
-        if [[ ! $(is_centos) ]]; then
-            echo "Native build can only be taken on CentOS Linux 8."
-            exit 1
-        fi
+    # check whether docker service installed
+    check_cmd docker
+    # check whether mock docker image exist
+    if [[ "$(sudo docker images -q $pkg_build_docker 2> /dev/null)" == "" ]]; then
+        cmd_init_build_docker
     fi
 
     echo "Repo dir          : $repo_dir"
@@ -104,29 +92,24 @@ cmd_build_package() {
         exit 1
     fi
 
-    if ((build_in_docker)); then
-        #
-        # To stop build in docker, press Ctrl + C
-        #
-        ID=$(sudo docker run \
-            -e http_proxy=$http_proxy \
-            -e https_proxy=$http_proxy \
-            -e PACKAGE=$package_build \
-            -v $repo_dir:/repo \
-            -v $build_dir:/build \
-            -t -i -d \
-            $pkg_build_docker)
-        sudo docker attach $ID
-    else
-        python3 $base_repo_tools_dir/pkg-build/app.py -r $repo_dir -b $build_dir -p $package_build build
-    fi
+    #
+    # To stop build in docker, press Ctrl + C
+    #
+    ID=$(sudo docker run \
+        -e http_proxy=$http_proxy \
+        -e https_proxy=$http_proxy \
+        -e PACKAGE=$package_build \
+        -v $repo_dir:/repo \
+        -v $build_dir:/build \
+        -t -i -d \
+        $docker_registry/$pkg_build_docker)
+    sudo docker attach $ID
 
     echo "Done~"
 }
 
 #
-# Initialize mock docker. On non-CentOS system, the package build is via mock
-# container; while on CentOS system, it is native.
+# Initialize build docker
 #
 cmd_init_build_docker() {
     echo "Build $pkg_build_docker container..."
@@ -134,7 +117,7 @@ cmd_init_build_docker() {
     cd $base_repo_tools_dir
     git pull origin master
     check_cmd docker
-    ./build-container.sh
+    ./build-container.sh -a build -r $docker_registry -c $pkg_build_docker
     echo "Done~"
 }
 
@@ -159,21 +142,7 @@ cmd_build_all() {
     done
 }
 
-#
-# Judge whether current OS is CentOS
-#
-is_centos() {
-    distro=$(cat /etc/*-release | grep "CentOS Linux 8")
-    if [[ -z $distro ]]; then
-        echo 0
-    else
-        echo 1
-    fi
-}
-
 parse_cmd() {
-    build_in_docker=$((1-$(is_centos)))
-
     if [ -z $1 ]; then
         usage
     fi
