@@ -3,4 +3,15 @@ sources:
     - filename: sgx_2.9.tar.gz
       url: https://github.com/intel/linux-sgx/archive/sgx_2.9.tar.gz
       hash: 0cd91ec33ff496219f07ae2969d8d034
-
+    - filename: optimized_libs_2.9.1.tar.gz
+      url: https://download.01.org/intel-sgx/sgx-linux/2.9.1/optimized_libs_2.9.1.tar.gz
+      hash: 007d114799c6713067b91a4a51681f70
+    - filename: prebuilt_ae_2.9.1.tar.gz
+      url: https://download.01.org/intel-sgx/sgx-linux/2.9.1/prebuilt_ae_2.9.1.tar.gz
+      hash: 4052f740fbc152d87d2d9f25b00ff5a8
+    - filename: as.ld.objdump.gold.r1.tar.gz
+      url: https://download.01.org/intel-sgx/sgx-linux/2.9.1/as.ld.objdump.gold.r1.tar.gz
+      hash: 360f0118642afb05cae537005a8ad0c3
+    - filename: SHA256SUM_prebuilt_2.9.1.txt
+      url: https://download.01.org/intel-sgx/sgx-linux/2.9.1/SHA256SUM_prebuilt_2.9.1.txt
+      hash: b0708ce423fab7cea51ac5797fc096e4

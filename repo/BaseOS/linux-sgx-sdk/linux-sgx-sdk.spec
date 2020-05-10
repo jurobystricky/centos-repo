@@ -12,10 +12,10 @@ BuildRequires: /usr/bin/pathfix.py
 
 Source0: sgx_%{version}.tar.gz
 %undefine _disable_source_fetch
-Source1: https://download.01.org/intel-sgx/sgx-linux/2.9.1/optimized_libs_2.9.1.tar.gz
-Source2: https://download.01.org/intel-sgx/sgx-linux/2.9.1/prebuilt_ae_2.9.1.tar.gz
-Source3: https://download.01.org/intel-sgx/sgx-linux/2.9.1/as.ld.objdump.gold.r1.tar.gz
-Source4: https://download.01.org/intel-sgx/sgx-linux/2.9.1/SHA256SUM_prebuilt_2.9.1.txt
+Source1: optimized_libs_2.9.1.tar.gz
+Source2: prebuilt_ae_2.9.1.tar.gz
+Source3: as.ld.objdump.gold.r1.tar.gz
+Source4: SHA256SUM_prebuilt_2.9.1.txt
 
 # Disable the building of the debug package(s).
 %define debug_package %{nil}
