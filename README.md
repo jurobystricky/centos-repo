@@ -16,17 +16,9 @@ This repository includes all Intel optimized packages on CentOS Stream. These op
 
 #### Prerequisites:
 
-By default, build will be executed in docker environment on non-CentOS 8 OS and will be executed in native environment on CentOS OS.
-So on non-CentOS8 OS, please install docker engine.
+The package build is running on Docker, so please install docker engine on any Linux ditro first.
 
-_NOTE: Since the data folders like `build`, `result` was seperated customizable and stateless, so whole build can be easily deployed on kubernetes based cloud native build framework._
-
-#### Initialize mock build container
-```
-./pkg.sh init-build-docker
-```
-
-_NOTE: On CentOS, you might need install docker as:
+On CentOS as example:
 ```
 dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
 dnf remove podman
@@ -41,6 +33,12 @@ setenforce 0
 # disable selinux permenary, need reboot
 sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
 ```
+
+#### Initialize build container
+```
+./pkg2.sh init-build-docker
+```
+
 #### Build a package
 ```
 ./pkg2.sh build -p <package_name> [ -r <repo_dir>] [-n|-d]
