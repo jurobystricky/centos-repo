@@ -11,11 +11,10 @@ package_category_dirs=(BaseOS AppStream)
 package_build=""
 pkg_build_docker="il-pkg-build"
 docker_registry="library"
-build_in_docker=1
 verbose=0
 
 usage() {
-    echo "Usage: $0 <list|build|init-build-docker> [-r <repo_dir>] [-p package_name] [-b <build_dir>]"
+    echo "Usage: $0 <list|build|init-build-docker> [-r <repo_dir>] [-p package_name] [-b <build_dir>] [-i <registry>]"
     exit 1
 }
 
@@ -60,11 +59,14 @@ cmd_list_packages() {
 #         -r <repo path>
 #
 cmd_build_package() {
+    echo "Build $package_build container..."
+
+    check_pkg_build_tool
+
     mkdir -p $build_dir
 
     # check whether docker service installed
     check_cmd docker
-    # check whether mock docker image exist
     if [[ "$(sudo docker images -q $pkg_build_docker 2> /dev/null)" == "" ]]; then
         cmd_init_build_docker
     fi
@@ -81,7 +83,7 @@ cmd_build_package() {
 
     # Check whether package exist
     package_path=""
-    for i in ${package_category_dirs[@]}; do 
+    for i in ${package_category_dirs[@]}; do
         if [ -d ${repo_dir}/$i/$package_build ]; then
             package_path=$i/$package_build
             break
@@ -92,9 +94,7 @@ cmd_build_package() {
         exit 1
     fi
 
-    #
     # To stop build in docker, press Ctrl + C
-    #
     ID=$(sudo docker run \
         -e http_proxy=$http_proxy \
         -e https_proxy=$http_proxy \
@@ -113,12 +113,17 @@ cmd_build_package() {
 # Initialize build docker
 #
 cmd_init_build_docker() {
-    echo "Build $pkg_build_docker container..."
+    echo "Build $docker_registry/$pkg_build_docker container..."
     check_pkg_build_tool
+
+    # Update pkg build tool
     cd $base_repo_tools_dir
     git pull origin master
+
+    # build container
     check_cmd docker
     ./build-container.sh -a build -r $docker_registry -c $pkg_build_docker
+
     echo "Done~"
 }
 
@@ -143,6 +148,9 @@ cmd_build_all() {
     done
 }
 
+#
+# Parse parameters from command line.
+#
 parse_cmd() {
     if [ -z $1 ]; then
         usage
@@ -208,6 +216,4 @@ parse_cmd() {
     esac
 }
 
-
-check_pkg_build_tool
 parse_cmd $@
