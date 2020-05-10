@@ -36,6 +36,7 @@ rm -rf %{buildroot}
 %{_datadir}/icons/hicolor/*
 %{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/doc/*
+%{_datadir}/mime/*
 %{_mandir}/man1/%{name}.1*
 %config(noreplace) %{_sysconfdir}/bash_completion.d
 %config(noreplace) %{_sysconfdir}/../usr/lib/systemd/system/*
